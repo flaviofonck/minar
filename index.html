@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador Automático de Búsquedas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --success-color: #4facfe;
+            --warning-color: #f6d365;
+            --danger-color: #fa709a;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 20px 0;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header-section h1 {
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header-section p {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .form-section {
+            background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-control {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background: white;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover:before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--success-color));
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, var(--warning-color), #ffa726);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, var(--danger-color), #e91e63);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .status-section {
+            background: linear-gradient(145deg, #ffffff, #f1f5f9);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress {
+            height: 12px;
+            border-radius: 10px;
+            background: #e2e8f0;
+            overflow: hidden;
+            margin: 15px 0;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            background: linear-gradient(45deg, var(--primary-color), var(--success-color));
+            background-size: 20px 20px;
+            animation: progress-animation 2s linear infinite;
+        }
+
+        @keyframes progress-animation {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 20px 0;
+            }
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .status-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s ease;
+        }
+
+        .status-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .status-item .label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .status-item .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .log-container {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #e2e8f0;
+            position: relative;
+        }
+
+        .log-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .log-container::-webkit-scrollbar-track {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        .log-container::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .footer p {
+            margin: 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .main-card {
+                padding: 20px;
+                margin: 10px 0;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="main-card fade-in">
+            <div class="header-section">
+                <h1><i class="fas fa-search"></i> Generador Automático de Búsquedas</h1>
+                <p>Sistema inteligente para generar búsquedas automáticas en Bing - Versión GitHub Pages</p>
+            </div>
+
+            <form id="searchForm" class="form-section">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="repetitions" class="form-label">
+                            <i class="fas fa-repeat"></i> Número de repeticiones:
+                        </label>
+                        <input type="number" class="form-control" id="repetitions" name="repetitions" value="30" min="1"
+                            max="1000" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="waitTime" class="form-label">
+                            <i class="fas fa-clock"></i> Tiempo de espera (segundos):
+                        </label>
+                        <input type="number" class="form-control" id="waitTime" name="waitTime" value="8" min="1"
+                            max="60" required>
+                    </div>
+                </div>
+
+                <div class="btn-group justify-content-center">
+                    <button type="submit" id="startBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Iniciar Búsqueda
+                    </button>
+                    <button type="button" id="pauseBtn" class="btn btn-warning" disabled>
+                        <i class="fas fa-pause"></i> Pausar
+                    </button>
+                    <button type="button" id="stopBtn" class="btn btn-danger" disabled>
+                        <i class="fas fa-stop"></i> Detener
+                    </button>
+                </div>
+            </form>
+
+            <div class="status-section">
+                <h4><i class="fas fa-chart-line"></i> Estado del Proceso</h4>
+
+                <div class="progress">
+                    <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0"
+                        aria-valuemin="0" aria-valuemax="100">0%</div>
+                </div>
+
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="label">Estado</div>
+                        <div id="statusText" class="value">Detenido</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="label">Iteración</div>
+                        <div class="value"><span id="currentIteration">0</span>/<span id="totalIterations">0</span>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="label">Progreso</div>
+                        <div id="progressText" class="value">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="logContainer" class="form-label">
+                    <i class="fas fa-terminal"></i> Log de actividad:
+                </label>
+                <div class="log-container" id="logContainer">
+                    <div class="log-entry">🚀 Sistema listo para iniciar búsquedas automáticas... (Versión GitHub Pages)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><i class="fas fa-code"></i> Desarrollado por <strong>Flaviofonck</strong> <i class="fas fa-heart"
+                    style="color: #e74c3c;"></i></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Clase para manejar las sesiones de búsqueda (solo en el frontend)
+        class SearchSession {
+            constructor() {
+                this.running = false;
+                this.paused = false;
+                this.progress = 0;
+                this.currentIteration = 0;
+                this.totalIterations = 0;
+                this.lastPhrase = '';
+                this.lastUrl = '';
+                this.intervalId = null;
+                this.timeout = null;
+            }
+
+            start(iterations, waitTime) {
+                this.running = true;
+                this.paused = false;
+                this.totalIterations = iterations;
+                this.currentIteration = 0;
+                this.progress = 0;
+
+                this.runIteration(waitTime);
+            }
+
+            pause() {
+                this.paused = !this.paused;
+                return this.paused;
+            }
+
+            stop() {
+                this.running = false;
+                this.paused = false;
+                if (this.timeout) {
+                    clearTimeout(this.timeout);
+                    this.timeout = null;
+                }
+                if (this.intervalId) {
+                    clearInterval(this.intervalId);
+                    this.intervalId = null;
+                }
+            }
+
+            runIteration(waitTime) {
+                if (!this.running) return;
+
+                if (this.paused) {
+                    this.timeout = setTimeout(() => this.runIteration(waitTime), 1000);
+                    return;
+                }
+
+                if (this.currentIteration >= this.totalIterations) {
+                    this.running = false;
+                    return;
+                }
+
+                // Generar búsqueda
+                const resultado = this.generarBusquedaAleatoria();
+                if (resultado) {
+                    this.lastPhrase = resultado.frase;
+                    this.lastUrl = resultado.url;
+
+                    // Abrir nueva pestaña
+                    try {
+                        window.open(resultado.url, '_blank');
+                        addLog(`Nueva búsqueda: "${resultado.frase}"`, 'search');
+                    } catch (error) {
+                        addLog('Error: No se pudo abrir la pestaña automáticamente', 'error');
+                    }
+                }
+
+                this.currentIteration++;
+                this.progress = (this.currentIteration / this.totalIterations) * 100;
+
+                // Programar siguiente iteración
+                if (this.currentIteration < this.totalIterations) {
+                    this.timeout = setTimeout(() => this.runIteration(waitTime), waitTime * 1000);
+                } else {
+                    this.running = false;
+                }
+            }
+
+            // Base de datos local de palabras (reemplaza la API de Wikipedia)
+            obtenerPalabras() {
+                const palabrasBase = [
+                    'tree', 'mountain', 'river', 'cat', 'technology', 'history', 'art', 'science', 'nature', 'music',
+                    'soccer', 'basketball', 'tennis', 'baseball', 'football', 'volleyball', 'hockey', 'swimming', 'cycling', 'running',
+                    'computer', 'internet', 'software', 'hardware', 'programming', 'AI', 'robotics', 'cybersecurity', 'gadgets', 'apps',
+                    'ocean', 'forest', 'city', 'adventure', 'discovery', 'innovation', 'culture', 'education', 'travel', 'photography',
+                    'health', 'fitness', 'cooking', 'recipe', 'food', 'restaurant', 'movie', 'cinema', 'book', 'reading',
+                    'garden', 'flower', 'bird', 'animal', 'space', 'planet', 'star', 'universe', 'physics', 'chemistry',
+                    'mathematics', 'biology', 'medicine', 'doctor', 'hospital', 'car', 'transport', 'airplane', 'train', 'bicycle',
+                    'house', 'home', 'family', 'friend', 'love', 'happiness', 'success', 'business', 'work', 'job',
+                    'weather', 'climate', 'environment', 'ecology', 'renewable', 'energy', 'solar', 'wind', 'water', 'fire',
+                    'language', 'communication', 'social', 'media', 'network', 'website', 'design', 'creative', 'artistic', 'beautiful'
+                ];
+
+                // Generar variaciones adicionales mezclando palabras
+                const palabrasExtendidas = [...palabrasBase];
+
+                // Añadir algunas palabras compuestas
+                const prefijos = ['best', 'top', 'new', 'modern', 'advanced', 'smart', 'digital', 'future', 'green', 'sustainable'];
+                const sufijos = ['guide', 'tutorial', 'tips', 'review', 'analysis', 'benefits', 'advantages', 'solution', 'method', 'technique'];
+
+                for (let i = 0; i < 20; i++) {
+                    const palabra = palabrasBase[Math.floor(Math.random() * palabrasBase.length)];
+                    const prefijo = prefijos[Math.floor(Math.random() * prefijos.length)];
+                    const sufijo = sufijos[Math.floor(Math.random() * sufijos.length)];
+                    palabrasExtendidas.push(`${prefijo} ${palabra}`);
+                    palabrasExtendidas.push(`${palabra} ${sufijo}`);
+                }
+
+                return palabrasExtendidas;
+            }
+
+            generarFraseAleatoria(palabras) {
+                if (palabras.length < 4) {
+                    return "No se obtuvieron suficientes palabras para generar una frase.";
+                }
+
+                const palabra1 = palabras[Math.floor(Math.random() * palabras.length)];
+                const palabra2 = palabras[Math.floor(Math.random() * palabras.length)];
+                const palabra3 = palabras[Math.floor(Math.random() * palabras.length)];
+                const palabra4 = palabras[Math.floor(Math.random() * palabras.length)];
+
+                const plantillas = [
+                    `La ${palabra1} y el ${palabra2} son ${palabra3}`,
+                    `El ${palabra1} de ${palabra2} en ${palabra3}`,
+                    `Como funciona ${palabra1} con ${palabra2}`,
+                    `Diferencias entre ${palabra1} y ${palabra2}`,
+                    `Mejores ${palabra1} para ${palabra2}`,
+                    `Historia de ${palabra1} en ${palabra2}`,
+                    `Beneficios de ${palabra1} y ${palabra2}`,
+                    `${palabra1} vs ${palabra2} comparación`,
+                    `Guía completa de ${palabra1}`,
+                    `Tips para ${palabra1} y ${palabra2}`,
+                    `Cómo elegir ${palabra1} para ${palabra2}`,
+                    `${palabra1} más populares en ${palabra2}`,
+                    `Ventajas de usar ${palabra1} con ${palabra2}`,
+                    `${palabra1} profesional para ${palabra2}`,
+                    `Curso de ${palabra1} y ${palabra2}`,
+                    `${palabra1} gratis para ${palabra2}`,
+                    `Aplicaciones de ${palabra1} en ${palabra2}`,
+                    `${palabra1} moderna para ${palabra2}`,
+                    `Tendencias de ${palabra1} en ${palabra2}`,
+                    `${palabra1} innovadora y ${palabra2}`
+                ];
+
+                return plantillas[Math.floor(Math.random() * plantillas.length)];
+            }
+
+            generarBusquedaAleatoria() {
+                const palabras = this.obtenerPalabras();
+                if (palabras && palabras.length > 0) {
+                    // Generar múltiples frases y seleccionar una aleatoria
+                    const frases = [];
+                    for (let i = 0; i < 50; i++) {
+                        frases.push(this.generarFraseAleatoria(palabras));
+                    }
+                    const fraseAleatoria = frases[Math.floor(Math.random() * frases.length)];
+                    const urlBusqueda = `https://www.bing.com/search?q=${encodeURIComponent(fraseAleatoria)}&FORM=SSQNT1&PC=EDGEDSE`;
+
+                    console.log('Frase generada:', fraseAleatoria);
+                    return {
+                        frase: fraseAleatoria,
+                        url: urlBusqueda
+                    };
+                }
+                return null;
+            }
+        }
+
+        // Variables globales
+        let currentSession = null;
+        let statusInterval = null;
+
+        // Referencias a elementos DOM
+        const form = document.getElementById('searchForm');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const progressBar = document.getElementById('progressBar');
+        const statusText = document.getElementById('statusText');
+        const currentIteration = document.getElementById('currentIteration');
+        const totalIterations = document.getElementById('totalIterations');
+        const progressText = document.getElementById('progressText');
+        const logContainer = document.getElementById('logContainer');
+
+        // Función para agregar mensajes al log con iconos y colores
+        function addLog(message, type = 'info') {
+            const now = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry fade-in';
+
+            let icon = '📝';
+            let color = '#e2e8f0';
+
+            switch (type) {
+                case 'success':
+                    icon = '✅';
+                    color = '#10b981';
+                    break;
+                case 'warning':
+                    icon = '⚠️';
+                    color = '#f59e0b';
+                    break;
+                case 'error':
+                    icon = '❌';
+                    color = '#ef4444';
+                    break;
+                case 'search':
+                    icon = '🔍';
+                    color = '#3b82f6';
+                    break;
+                case 'info':
+                default:
+                    icon = 'ℹ️';
+                    color = '#6b7280';
+                    break;
+            }
+
+            logEntry.innerHTML = `<span style="color: ${color}">${icon} [${now}] ${message}</span>`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // Función para actualizar la UI
+        function updateUI() {
+            if (!currentSession) return;
+
+            if (currentSession.running) {
+                startBtn.disabled = true;
+                pauseBtn.disabled = false;
+                stopBtn.disabled = false;
+                pauseBtn.innerHTML = currentSession.paused ? '<i class="fas fa-play"></i> Reanudar' : '<i class="fas fa-pause"></i> Pausar';
+                statusText.textContent = currentSession.paused ? 'Pausado' : 'Ejecutándose';
+                statusText.className = currentSession.paused ? 'value pulse' : 'value';
+            } else {
+                startBtn.disabled = false;
+                pauseBtn.disabled = true;
+                stopBtn.disabled = true;
+                pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pausar';
+                statusText.textContent = 'Detenido';
+                statusText.className = 'value';
+
+                // Detener el polling si la sesión terminó
+                if (statusInterval) {
+                    clearInterval(statusInterval);
+                    statusInterval = null;
+                    if (currentSession.currentIteration >= currentSession.totalIterations) {
+                        addLog('Proceso completado exitosamente', 'success');
+                    }
+                }
+            }
+
+            const progress = Math.round(currentSession.progress || 0);
+            progressBar.style.width = `${progress}%`;
+            progressBar.textContent = `${progress}%`;
+            progressBar.setAttribute('aria-valuenow', progress);
+
+            currentIteration.textContent = currentSession.currentIteration || 0;
+            totalIterations.textContent = currentSession.totalIterations || 0;
+            progressText.textContent = `${progress}%`;
+        }
+
+        // Manejar envío del formulario
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const repetitions = parseInt(document.getElementById('repetitions').value);
+            const waitTime = parseInt(document.getElementById('waitTime').value);
+
+            if (isNaN(repetitions) || isNaN(waitTime) || repetitions < 1 || waitTime < 1) {
+                addLog('Error: Por favor, introduce números válidos', 'error');
+                return;
+            }
+
+            // Crear nueva sesión
+            currentSession = new SearchSession();
+
+            addLog(`Búsqueda iniciada: ${repetitions} repeticiones con ${waitTime}s de espera`, 'success');
+
+            // Iniciar sesión
+            currentSession.start(repetitions, waitTime);
+
+            // Iniciar el polling del estado
+            if (statusInterval) clearInterval(statusInterval);
+            statusInterval = setInterval(updateUI, 1000);
+
+            // Actualizar UI inmediatamente
+            updateUI();
+        });
+
+        // Botón pausar/reanudar
+        pauseBtn.addEventListener('click', function () {
+            if (!currentSession) return;
+
+            const wasPaused = currentSession.pause();
+            addLog(wasPaused ? 'Pausado' : 'Reanudado', 'info');
+            updateUI();
+        });
+
+        // Botón detener
+        stopBtn.addEventListener('click', function () {
+            if (!currentSession) return;
+
+            currentSession.stop();
+            addLog('Búsqueda detenida', 'warning');
+
+            if (statusInterval) {
+                clearInterval(statusInterval);
+                statusInterval = null;
+            }
+
+            updateUI();
+        });
+
+        // Actualizar UI inicial
+        updateUI();
+    </script>
+</body>
+
+</html>
