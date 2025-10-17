@@ -151,6 +151,29 @@
             margin-right: 8px;
         }
 
+        .btn-success {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .form-check-label {
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        #autoStartConfig {
+            background: linear-gradient(145deg, #f0f9ff, #e0f2fe);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+        }
+
         .status-section {
             background: linear-gradient(145deg, #ffffff, #f1f5f9);
             padding: 25px;
@@ -345,15 +368,103 @@
                         <label for="repetitions" class="form-label">
                             <i class="fas fa-repeat"></i> Número de repeticiones:
                         </label>
-                        <input type="number" class="form-control" id="repetitions" name="repetitions" value="30" min="1"
+                        <input type="number" class="form-control" id="repetitions" name="repetitions" value="22" min="1"
                             max="1000" required>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="waitTime" class="form-label">
                             <i class="fas fa-clock"></i> Tiempo de espera (segundos):
                         </label>
-                        <input type="number" class="form-control" id="waitTime" name="waitTime" value="8" min="1"
+                        <input type="number" class="form-control" id="waitTime" name="waitTime" value="6" min="1"
                             max="60" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="autoStartEnabled" checked>
+                            <label class="form-check-label" for="autoStartEnabled">
+                                <i class="fas fa-robot"></i> <strong>Habilitar inicio automático diario</strong>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="autoStartConfig">
+                    <div class="col-md-4 mb-3">
+                        <label for="autoStartHour" class="form-label">
+                            <i class="fas fa-clock"></i> Hora de inicio automático:
+                        </label>
+                        <select class="form-control" id="autoStartHour" name="autoStartHour">
+                            <option value="0">00</option>
+                            <option value="1">01</option>
+                            <option value="2">02</option>
+                            <option value="3">03</option>
+                            <option value="4">04</option>
+                            <option value="5">05</option>
+                            <option value="6">06</option>
+                            <option value="7">07</option>
+                            <option value="8">08</option>
+                            <option value="9">09</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21" selected>21</option>
+                            <option value="22">22</option>
+                            <option value="23">23</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="autoStartMinute" class="form-label">
+                            <i class="fas fa-clock"></i> Minuto:
+                        </label>
+                        <select class="form-control" id="autoStartMinute" name="autoStartMinute">
+                            <option value="0">00</option>
+                            <option value="2">02</option>
+                            <option value="4">04</option>
+                            <option value="6">06</option>
+                            <option value="8">08</option>
+                            <option value="10">10</option>
+                            <option value="12">12</option>
+                            <option value="14">14</option>
+                            <option value="16">16</option>
+                            <option value="18">18</option>
+                            <option value="20">20</option>
+                            <option value="22">22</option>
+                            <option value="24">24</option>
+                            <option value="26">26</option>
+                            <option value="28">28</option>
+                            <option value="30">30</option>
+                            <option value="32">32</option>
+                            <option value="34">34</option>
+                            <option value="36">36</option>
+                            <option value="38">38</option>
+                            <option value="40">40</option>
+                            <option value="42">42</option>
+                            <option value="44">44</option>
+                            <option value="46">46</option>
+                            <option value="48">48</option>
+                            <option value="50">50</option>
+                            <option value="52">52</option>
+                            <option value="53" selected>53</option>
+                            <option value="54">54</option>
+                            <option value="56">56</option>
+                            <option value="58">58</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3 d-flex align-items-end">
+                        <button type="button" id="saveConfigBtn" class="btn btn-success w-100">
+                            <i class="fas fa-save"></i> Guardar Configuración
+                        </button>
                     </div>
                 </div>
 
@@ -391,6 +502,10 @@
                     <div class="status-item">
                         <div class="label">Progreso</div>
                         <div id="progressText" class="value">0%</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="label">Próxima Ejecución</div>
+                        <div id="nextExecution" class="value">21:53</div>
                     </div>
                 </div>
             </div>
@@ -588,6 +703,12 @@
         // Variables globales
         let currentSession = null;
         let statusInterval = null;
+        let autoStartInterval = null;
+        let autoStartConfig = {
+            enabled: true,
+            hour: 21,
+            minute: 53
+        };
 
         // Referencias a elementos DOM
         const form = document.getElementById('searchForm');
@@ -600,6 +721,126 @@
         const totalIterations = document.getElementById('totalIterations');
         const progressText = document.getElementById('progressText');
         const logContainer = document.getElementById('logContainer');
+        const nextExecution = document.getElementById('nextExecution');
+        const autoStartEnabled = document.getElementById('autoStartEnabled');
+        const autoStartHour = document.getElementById('autoStartHour');
+        const autoStartMinute = document.getElementById('autoStartMinute');
+        const saveConfigBtn = document.getElementById('saveConfigBtn');
+        const autoStartConfigDiv = document.getElementById('autoStartConfig');
+
+        // Función para verificar si es hora de iniciar automáticamente
+        function checkAutoStart() {
+            if (!autoStartConfig.enabled) return;
+
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+
+            // Verificar si es exactamente la hora configurada
+            if (currentHour === autoStartConfig.hour && currentMinute === autoStartConfig.minute) {
+                // Solo iniciar si no hay una sesión en curso
+                if (!currentSession || !currentSession.running) {
+                    const timeStr = `${String(autoStartConfig.hour).padStart(2, '0')}:${String(autoStartConfig.minute).padStart(2, '0')}`;
+                    addLog(`🕘 Inicio automático activado a las ${timeStr}`, 'success');
+                    startAutomaticSearch();
+                }
+            }
+        }
+
+        // Función para iniciar búsqueda automática
+        function startAutomaticSearch() {
+            const repetitions = parseInt(document.getElementById('repetitions').value) || 23;
+            const waitTime = parseInt(document.getElementById('waitTime').value) || 6;
+
+            // Crear nueva sesión
+            currentSession = new SearchSession();
+            addLog(`🤖 Búsqueda automática iniciada: ${repetitions} repeticiones con ${waitTime}s de espera`, 'success');
+
+            // Iniciar sesión
+            currentSession.start(repetitions, waitTime);
+
+            // Iniciar el polling del estado
+            if (statusInterval) clearInterval(statusInterval);
+            statusInterval = setInterval(updateUI, 1000);
+
+            // Actualizar UI inmediatamente
+            updateUI();
+        }
+
+        // Función para actualizar el tiempo hasta la próxima ejecución
+        function updateNextExecution() {
+            if (!autoStartConfig.enabled) {
+                nextExecution.textContent = "Deshabilitado";
+                return;
+            }
+
+            const now = new Date();
+            const today = new Date();
+            today.setHours(autoStartConfig.hour, autoStartConfig.minute, 0, 0);
+
+            // Si ya pasó la hora de hoy, calcular para mañana
+            if (now > today) {
+                today.setDate(today.getDate() + 1);
+            }
+
+            const timeUntil = today - now;
+            const hoursUntil = Math.floor(timeUntil / (1000 * 60 * 60));
+            const minutesUntil = Math.floor((timeUntil % (1000 * 60 * 60)) / (1000 * 60));
+
+            if (hoursUntil > 0) {
+                nextExecution.textContent = `${hoursUntil}h ${minutesUntil}m`;
+            } else if (minutesUntil > 0) {
+                nextExecution.textContent = `${minutesUntil}m`;
+            } else {
+                nextExecution.textContent = "Muy pronto...";
+            }
+        }
+
+        // Función para guardar configuración en localStorage
+        function saveAutoStartConfig() {
+            autoStartConfig.enabled = autoStartEnabled.checked;
+            autoStartConfig.hour = parseInt(autoStartHour.value);
+            autoStartConfig.minute = parseInt(autoStartMinute.value);
+
+            localStorage.setItem('autoStartConfig', JSON.stringify(autoStartConfig));
+
+            const timeStr = `${String(autoStartConfig.hour).padStart(2, '0')}:${String(autoStartConfig.minute).padStart(2, '0')}`;
+            if (autoStartConfig.enabled) {
+                addLog(`⚙️ Configuración guardada: Inicio automático a las ${timeStr}`, 'success');
+            } else {
+                addLog('⚙️ Inicio automático deshabilitado', 'warning');
+            }
+
+            updateNextExecution();
+        }
+
+        // Función para cargar configuración desde localStorage
+        function loadAutoStartConfig() {
+            const saved = localStorage.getItem('autoStartConfig');
+            if (saved) {
+                try {
+                    autoStartConfig = JSON.parse(saved);
+                } catch (e) {
+                    console.error('Error al cargar configuración:', e);
+                }
+            }
+
+            // Actualizar interfaz con la configuración cargada
+            autoStartEnabled.checked = autoStartConfig.enabled;
+            autoStartHour.value = autoStartConfig.hour;
+            autoStartMinute.value = autoStartConfig.minute;
+
+            toggleAutoStartConfig();
+        }
+
+        // Función para mostrar/ocultar configuración de auto-inicio
+        function toggleAutoStartConfig() {
+            if (autoStartEnabled.checked) {
+                autoStartConfigDiv.style.display = 'block';
+            } else {
+                autoStartConfigDiv.style.display = 'none';
+            }
+        }
 
         // Función para agregar mensajes al log con iconos y colores
         function addLog(message, type = 'info') {
@@ -730,8 +971,58 @@
             updateUI();
         });
 
+        // Event listeners para la configuración de auto-inicio
+        autoStartEnabled.addEventListener('change', toggleAutoStartConfig);
+
+        saveConfigBtn.addEventListener('click', saveAutoStartConfig);
+
+        // Guardar configuración automáticamente cuando cambien los valores
+        autoStartHour.addEventListener('change', function () {
+            const timeStr = `${String(this.value).padStart(2, '0')}:${String(autoStartMinute.value).padStart(2, '0')}`;
+            addLog(`🕘 Hora actualizada: ${timeStr}`, 'info');
+        });
+
+        autoStartMinute.addEventListener('change', function () {
+            const timeStr = `${String(autoStartHour.value).padStart(2, '0')}:${String(this.value).padStart(2, '0')}`;
+            addLog(`🕘 Hora actualizada: ${timeStr}`, 'info');
+        });
+
         // Actualizar UI inicial
         updateUI();
+
+        // Inicializar sistema de auto-inicio
+        function initializeAutoStart() {
+            // Cargar configuración guardada
+            loadAutoStartConfig();
+
+            const timeStr = `${String(autoStartConfig.hour).padStart(2, '0')}:${String(autoStartConfig.minute).padStart(2, '0')}`;
+            if (autoStartConfig.enabled) {
+                addLog(`🔄 Sistema de inicio automático activado para las ${timeStr}`, 'info');
+            } else {
+                addLog('🔄 Sistema de inicio automático deshabilitado', 'warning');
+            }
+
+            // Verificar cada minuto si es hora de iniciar
+            autoStartInterval = setInterval(() => {
+                checkAutoStart();
+                updateNextExecution();
+            }, 60000); // Verificar cada minuto
+
+            // Actualizar inmediatamente el tiempo hasta la próxima ejecución
+            updateNextExecution();
+        }
+
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeAutoStart();
+        });
+
+        // Si el DOM ya está listo, inicializar inmediatamente
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeAutoStart);
+        } else {
+            initializeAutoStart();
+        }
     </script>
 </body>
 
