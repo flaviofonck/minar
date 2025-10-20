@@ -44,7 +44,31 @@ Puedes probar la aplicación directamente desde GitHub Pages: [Ver Demo](https:/
 ### Configuración Personalizada
 - **Repeticiones**: Por defecto 25 (modificable en la interfaz)
 - **Intervalo**: Por defecto 6 segundos (modificable en la interfaz)
-- **Auto-inicio**: 5 segundos después de cargar la página
+- **Auto-inicio**: Configurable con switch on/off
+- **Auto-refresh**: Intervalos personalizados desde 1 minuto hasta 1 semana
+
+## 🕐 Intervalos de Auto-actualización
+
+### ⏰ Configuración Flexible
+- **Horas**: 0-168 (hasta 1 semana)
+- **Minutos**: 0-59
+- **Mínimo total**: 1 minuto
+- **Máximo total**: 168 horas (1 semana)
+
+### 🎯 Botones de Intervalos Sugeridos
+| Botón | Tiempo | Uso Recomendado |
+|-------|--------|-----------------|
+| 30 min | 30 minutos | Pruebas y desarrollo |
+| 1 hora | 1 hora | Uso frecuente |
+| 6 horas | 6 horas | Uso regular |
+| 24 horas | 24 horas | Uso estándar |
+
+### 💡 Ejemplos de Configuración
+- **Desarrollo**: 30 minutos (para pruebas)
+- **Trabajo diario**: 2 horas
+- **Uso personal**: 6-12 horas  
+- **Fin de semana**: 24-48 horas
+- **Vacaciones**: 1 semana (168 horas)
 
 ## � Cómo usar
 
@@ -91,19 +115,32 @@ Puedes probar la aplicación directamente desde GitHub Pages: [Ver Demo](https:/
 2. Sube el archivo `index.html`
 3. La aplicación estará disponible directamente en `https://tuusuario.github.io/`
 
-## 🆕 Nuevas Características (Versión 2.0)
+## 🆕 Nuevas Características (Versión 3.0)
 
-### 🚀 Auto-inicio Inteligente
-- ⏰ **Inicio automático**: La aplicación inicia automáticamente después de 5 segundos
-- ⏳ **Countdown visual**: Muestra "⏳ Auto-inicio en X segundos..." en el log
-- 🎯 **Configuración optimizada**: Valores por defecto mejorados (25 repeticiones, 6s intervalo)
-- 📱 **Experiencia sin clics**: Simplemente abre la página y listo
+### 🚀 Auto-inicio Configurable
+- ⏰ **Control total**: Activar/desactivar inicio automático con switch
+- ⏳ **Countdown inteligente**: Solo muestra countdown si está habilitado
+- 🎯 **Configuración persistente**: Recuerda tu preferencia
+- 📱 **Experiencia personalizable**: Tú decides si quieres auto-inicio o control manual
 
-### 🔧 Mejoras de Usabilidad
-- 🎨 **Interfaz más intuitiva**: Colores y iconos mejorados en el log
-- 📊 **Valores optimizados**: Configuración por defecto más eficiente
-- 💬 **Mensajes mejorados**: Comunicación más clara del estado del proceso
-- ⚡ **Rendimiento optimizado**: Carga más rápida y mejor gestión de recursos
+### ⏰ Auto-refresh Ultra Personalizable
+- 🕐 **Intervalos precisos**: Configuración en horas Y minutos
+- 🎯 **Botones rápidos**: 30min, 1h, 6h, 24h con un clic
+- 📊 **Rango flexible**: Desde 1 minuto hasta 168 horas (1 semana)
+- 🔄 **Actualización inteligente**: Recalcula automáticamente al cambiar
+- ⚠️ **Validación automática**: Previene configuraciones inválidas
+
+### � Persistencia Total
+- 📋 **Auto-guardado**: Todas las configuraciones se guardan automáticamente
+- 🔄 **Restauración**: Al recargar, mantiene todos tus ajustes
+- 📅 **Historial**: Muestra cuándo fue la última configuración
+- 🎛️ **Estado completo**: Switches, valores y timestamps persistentes
+
+### 🔧 Mejoras de Interfaz
+- 🎨 **Sección de configuraciones avanzadas**: Panel dedicado para ajustes
+- � **Layout responsivo**: Botones sugeridos organizados elegantemente
+- 💬 **Mensajes mejorados**: Feedback claro en tiempo real
+- ⚡ **Validación en vivo**: Correcciones automáticas de valores
 
 ## ⚙️ Diferencias con la versión Flask
 
@@ -164,12 +201,15 @@ Modifica las variables CSS en `:root` para cambiar los colores y temas.
 - **Hosting**: Compatible con GitHub Pages
 - **Diseño**: Interfaz moderna con gradientes y efectos visuales
 
-### � Estadísticas del Proyecto
+### 📈 Estadísticas del Proyecto
 - 📁 **Archivos**: 2 (index.html + README.md)
-- 📝 **Líneas de código**: ~780 líneas
+- 📝 **Líneas de código**: ~1100+ líneas (creciendo)
 - 🔤 **Palabras base**: 100+ términos
 - 📋 **Plantillas de frases**: 20+ patrones
 - 🌐 **Compatibilidad**: Todos los navegadores modernos
+- ⚙️ **Configuraciones**: 6 ajustes personalizables
+- 🎯 **Intervalos sugeridos**: 4 botones rápidos
+- ⏰ **Rango de auto-refresh**: 1 minuto - 1 semana
 
 ## 🤝 Contribuciones
 

@@ -357,6 +357,76 @@
                     </div>
                 </div>
 
+                <!-- Configuraciones Avanzadas -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5 class="mb-3">
+                            <i class="fas fa-cog"></i> Configuraciones Avanzadas
+                        </h5>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="autoStartEnabled" checked>
+                            <label class="form-check-label" for="autoStartEnabled">
+                                <i class="fas fa-rocket"></i> Auto-inicio (5 segundos)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="autoRefreshEnabled" checked>
+                            <label class="form-check-label" for="autoRefreshEnabled">
+                                <i class="fas fa-sync-alt"></i> Auto-actualización
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-hourglass-half"></i> Intervalo para auto-actualización:
+                        </label>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="refreshHours" name="refreshHours"
+                                        value="24" min="0" max="168">
+                                    <span class="input-group-text">horas</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="refreshMinutes" name="refreshMinutes"
+                                        value="0" min="0" max="59">
+                                    <span class="input-group-text">minutos</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-text">
+                            <small>Mínimo: 1 minuto - Máximo: 168 horas (1 semana)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-muted">
+                            <i class="fas fa-info-circle"></i> Intervalos sugeridos:
+                        </label>
+                        <div class="d-grid gap-1">
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                onclick="setRefreshInterval(0, 30)">30 min</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                onclick="setRefreshInterval(1, 0)">1 hora</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                onclick="setRefreshInterval(6, 0)">6 horas</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                onclick="setRefreshInterval(24, 0)">24 horas</button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="btn-group justify-content-center">
                     <button type="submit" id="startBtn" class="btn btn-primary">
                         <i class="fas fa-play"></i> Iniciar Búsqueda
@@ -736,18 +806,32 @@
         // Auto-iniciar la generación de búsquedas después de 5 segundos
         let autoStartCountdown = 5;
 
-        // Mostrar countdown en el log
+        // Mostrar countdown en el log (solo si auto-inicio está habilitado)
         const countdownInterval = setInterval(function () {
             if (autoStartCountdown > 0) {
-                addLog(`⏳ Auto-inicio en ${autoStartCountdown} segundos...`, 'info');
+                const autoStartEnabled = document.getElementById('autoStartEnabled').checked;
+                if (autoStartEnabled) {
+                    addLog(`⏳ Auto-inicio en ${autoStartCountdown} segundos...`, 'info');
+                } else if (autoStartCountdown === 5) {
+                    // Solo mostrar una vez que está deshabilitado
+                    addLog('⏸️ Auto-inicio deshabilitado', 'info');
+                }
                 autoStartCountdown--;
             } else {
                 clearInterval(countdownInterval);
             }
         }, 1000);
 
-        // Ejecutar auto-inicio después de 5 segundos
+        // Ejecutar auto-inicio después de 5 segundos (si está habilitado)
         setTimeout(function () {
+            // Verificar si el auto-inicio está habilitado
+            const autoStartEnabled = document.getElementById('autoStartEnabled').checked;
+
+            if (!autoStartEnabled) {
+                addLog('⏸️ Auto-inicio deshabilitado por el usuario', 'info');
+                return;
+            }
+
             // Obtener los valores del formulario
             const repetitionsInput = document.getElementById('repetitions');
             const waitTimeInput = document.getElementById('waitTime');
@@ -776,6 +860,263 @@
             // Actualizar UI inmediatamente
             updateUI();
         }, 5000); // 5 segundos de espera
+
+        // ===== FUNCIONALIDADES ADICIONALES =====
+
+        // 🎯 FUNCIÓN PARA ESTABLECER INTERVALOS SUGERIDOS
+        function setRefreshInterval(hours, minutes) {
+            document.getElementById('refreshHours').value = hours;
+            document.getElementById('refreshMinutes').value = minutes;
+
+            const totalMinutes = (hours * 60) + minutes;
+            let timeText = '';
+
+            if (hours > 0 && minutes > 0) {
+                timeText = `${hours}h ${minutes}m`;
+            } else if (hours > 0) {
+                timeText = `${hours} hora${hours > 1 ? 's' : ''}`;
+            } else {
+                timeText = `${minutes} minuto${minutes > 1 ? 's' : ''}`;
+            }
+
+            addLog(`⏰ Intervalo establecido: ${timeText}`, 'info');
+            saveSettings();
+            updateAutoRefreshStatus();
+        }
+
+        // 💾 GUARDAR/CARGAR PARÁMETROS EN LOCALSTORAGE
+        function saveSettings() {
+            const repetitions = document.getElementById('repetitions').value;
+            const waitTime = document.getElementById('waitTime').value;
+            const autoStartEnabled = document.getElementById('autoStartEnabled').checked;
+            const autoRefreshEnabled = document.getElementById('autoRefreshEnabled').checked;
+            const refreshHours = document.getElementById('refreshHours').value;
+            const refreshMinutes = document.getElementById('refreshMinutes').value;
+
+            localStorage.setItem('searchSettings', JSON.stringify({
+                repetitions: repetitions,
+                waitTime: waitTime,
+                autoStartEnabled: autoStartEnabled,
+                autoRefreshEnabled: autoRefreshEnabled,
+                refreshHours: refreshHours,
+                refreshMinutes: refreshMinutes,
+                lastSaved: new Date().toISOString()
+            }));
+
+            addLog('💾 Configuración guardada localmente', 'success');
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('searchSettings');
+            if (saved) {
+                try {
+                    const settings = JSON.parse(saved);
+                    document.getElementById('repetitions').value = settings.repetitions || 25;
+                    document.getElementById('waitTime').value = settings.waitTime || 6;
+                    document.getElementById('autoStartEnabled').checked = settings.autoStartEnabled !== false; // default true
+                    document.getElementById('autoRefreshEnabled').checked = settings.autoRefreshEnabled !== false; // default true
+                    document.getElementById('refreshHours').value = settings.refreshHours || 24;
+                    document.getElementById('refreshMinutes').value = settings.refreshMinutes || 0;
+
+                    const savedDate = new Date(settings.lastSaved).toLocaleDateString();
+                    addLog(`📋 Configuración cargada (guardada: ${savedDate})`, 'info');
+
+                    // Actualizar estado de auto-actualización basado en configuración
+                    updateAutoRefreshStatus();
+                } catch (e) {
+                    addLog('⚠️ Error cargando configuración guardada', 'warning');
+                }
+            }
+        }        // Auto-guardar cuando cambien los valores
+        document.getElementById('repetitions').addEventListener('change', saveSettings);
+        document.getElementById('waitTime').addEventListener('change', saveSettings);
+        document.getElementById('autoStartEnabled').addEventListener('change', function () {
+            saveSettings();
+            const enabled = this.checked;
+            addLog(enabled ? '🚀 Auto-inicio activado' : '⏸️ Auto-inicio desactivado', 'info');
+        });
+        document.getElementById('autoRefreshEnabled').addEventListener('change', function () {
+            saveSettings();
+            updateAutoRefreshStatus();
+        });
+        document.getElementById('refreshHours').addEventListener('change', function () {
+            validateRefreshInterval();
+            saveSettings();
+            updateAutoRefreshStatus();
+        });
+        document.getElementById('refreshMinutes').addEventListener('change', function () {
+            validateRefreshInterval();
+            saveSettings();
+            updateAutoRefreshStatus();
+        });
+
+        // Validar que el intervalo sea al menos 1 minuto
+        function validateRefreshInterval() {
+            const hours = parseInt(document.getElementById('refreshHours').value) || 0;
+            const minutes = parseInt(document.getElementById('refreshMinutes').value) || 0;
+
+            if (hours === 0 && minutes === 0) {
+                document.getElementById('refreshMinutes').value = 1;
+                addLog('⚠️ Intervalo mínimo establecido: 1 minuto', 'warning');
+            }
+        }
+
+        // 🔄 AUTO-ACTUALIZACIÓN PERSONALIZABLE
+        let autoRefreshTimeout = null;
+
+        function updateAutoRefreshStatus() {
+            const autoRefreshEnabled = document.getElementById('autoRefreshEnabled').checked;
+            const refreshHours = parseInt(document.getElementById('refreshHours').value) || 0;
+            const refreshMinutes = parseInt(document.getElementById('refreshMinutes').value) || 0;
+
+            // Limpiar timeout anterior si existe
+            if (autoRefreshTimeout) {
+                clearTimeout(autoRefreshTimeout);
+                autoRefreshTimeout = null;
+            }
+
+            if (!autoRefreshEnabled) {
+                addLog('🔄 Auto-actualización desactivada', 'info');
+                return;
+            }
+
+            const totalMinutes = (refreshHours * 60) + refreshMinutes;
+            let timeText = '';
+
+            if (refreshHours > 0 && refreshMinutes > 0) {
+                timeText = `${refreshHours}h ${refreshMinutes}m`;
+            } else if (refreshHours > 0) {
+                timeText = `${refreshHours} hora${refreshHours > 1 ? 's' : ''}`;
+            } else {
+                timeText = `${refreshMinutes} minuto${refreshMinutes > 1 ? 's' : ''}`;
+            }
+
+            addLog(`🔄 Auto-actualización activada cada ${timeText}`, 'success');
+            setupAutoRefresh();
+        }
+
+        function setupAutoRefresh() {
+            const autoRefreshEnabled = document.getElementById('autoRefreshEnabled').checked;
+
+            if (!autoRefreshEnabled) {
+                return;
+            }
+
+            const refreshHours = parseInt(document.getElementById('refreshHours').value) || 0;
+            const refreshMinutes = parseInt(document.getElementById('refreshMinutes').value) || 0;
+            const totalMinutes = (refreshHours * 60) + refreshMinutes;
+
+            // Validar mínimo 1 minuto
+            if (totalMinutes < 1) {
+                document.getElementById('refreshMinutes').value = 1;
+                addLog('⚠️ Intervalo mínimo: 1 minuto', 'warning');
+                return;
+            }
+
+            const lastRefresh = localStorage.getItem('lastAutoRefresh');
+            const now = new Date().getTime();
+            const refreshInterval = totalMinutes * 60 * 1000; // convertir a milisegundos
+
+            let timeText = '';
+            if (refreshHours > 0 && refreshMinutes > 0) {
+                timeText = `${refreshHours}h ${refreshMinutes}m`;
+            } else if (refreshHours > 0) {
+                timeText = `${refreshHours}h`;
+            } else {
+                timeText = `${refreshMinutes}m`;
+            }
+
+            if (lastRefresh) {
+                const timeSinceRefresh = now - parseInt(lastRefresh);
+                const timeUntilRefresh = refreshInterval - timeSinceRefresh;
+
+                if (timeSinceRefresh >= refreshInterval) {
+                    // Ha pasado el tiempo configurado, actualizar ahora
+                    localStorage.setItem('lastAutoRefresh', now.toString());
+                    addLog(`🔄 Auto-actualización (${timeText} cumplidos)`, 'info');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 3000); // Esperar 3 segundos antes de recargar
+                } else {
+                    // Programar próxima actualización
+                    autoRefreshTimeout = setTimeout(() => {
+                        localStorage.setItem('lastAutoRefresh', new Date().getTime().toString());
+                        addLog(`🔄 Auto-actualización programada ejecutándose...`, 'info');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    }, timeUntilRefresh);
+
+                    const minutesLeft = Math.ceil(timeUntilRefresh / (60 * 1000));
+                    const hoursLeft = Math.floor(minutesLeft / 60);
+                    const remainingMinutes = minutesLeft % 60;
+
+                    let timeLeftText = '';
+                    if (hoursLeft > 0) {
+                        timeLeftText = remainingMinutes > 0 ? `${hoursLeft}h ${remainingMinutes}m` : `${hoursLeft}h`;
+                    } else {
+                        timeLeftText = `${minutesLeft}m`;
+                    }
+
+                    addLog(`⏰ Próxima auto-actualización en ~${timeLeftText}`, 'info');
+                }
+            } else {
+                // Primera vez, establecer timestamp
+                localStorage.setItem('lastAutoRefresh', now.toString());
+                addLog(`📅 Auto-actualización programada para ${timeText}`, 'info');
+
+                // Programar para el tiempo configurado
+                autoRefreshTimeout = setTimeout(() => {
+                    localStorage.setItem('lastAutoRefresh', new Date().getTime().toString());
+                    addLog(`🔄 Auto-actualización (${timeText} completados)`, 'info');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                }, refreshInterval);
+            }
+        }        // 🚀 INICIALIZACIÓN
+        // Cargar configuración guardada al inicio
+        loadSettings();
+
+        // Configurar auto-actualización
+        updateAutoRefreshStatus();
+
+        // Mostrar información del sistema
+        setTimeout(() => {
+            const savedSettings = localStorage.getItem('searchSettings');
+            const autoRefreshTime = localStorage.getItem('lastAutoRefresh');
+            const autoStartEnabled = document.getElementById('autoStartEnabled').checked;
+            const autoRefreshEnabled = document.getElementById('autoRefreshEnabled').checked;
+            const refreshHours = parseInt(document.getElementById('refreshHours').value) || 24;
+            const refreshMinutes = parseInt(document.getElementById('refreshMinutes').value) || 0;
+
+            if (savedSettings) {
+                addLog('✅ Sistema configurado con parámetros guardados', 'success');
+            }
+
+            // Mostrar estado de auto-inicio
+            addLog(autoStartEnabled ? '🚀 Auto-inicio: Habilitado' : '⏸️ Auto-inicio: Deshabilitado', 'info');
+
+            // Mostrar estado de auto-actualización
+            const totalMinutes = (refreshHours * 60) + refreshMinutes;
+            let timeText = '';
+            if (refreshHours > 0 && refreshMinutes > 0) {
+                timeText = `${refreshHours}h ${refreshMinutes}m`;
+            } else if (refreshHours > 0) {
+                timeText = `${refreshHours} hora${refreshHours > 1 ? 's' : ''}`;
+            } else {
+                timeText = `${refreshMinutes} minuto${refreshMinutes > 1 ? 's' : ''}`;
+            }
+
+            if (autoRefreshEnabled && autoRefreshTime) {
+                const nextRefresh = new Date(parseInt(autoRefreshTime) + (totalMinutes * 60 * 1000));
+                addLog(`🕐 Próxima actualización: ${nextRefresh.toLocaleString()}`, 'info');
+            } else if (autoRefreshEnabled) {
+                addLog(`🔄 Auto-actualización habilitada cada ${timeText}`, 'info');
+            } else {
+                addLog('🔄 Auto-actualización: Deshabilitada', 'info');
+            }
+        }, 1000);
 
     </script>
 </body>
